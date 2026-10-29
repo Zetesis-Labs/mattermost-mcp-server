@@ -6,7 +6,7 @@ Apache-2.0). Mattermost no publica imagen ni binario, así que se compila aquí
 desde el commit de la etiqueta upstream, sin modificar el código.
 
 ```
-ghcr.io/irontec-comms/mattermost-mcp-server:<etiqueta upstream>
+ghcr.io/zetesis-labs/mattermost-mcp-server:<etiqueta upstream>
 ```
 
 ## Uso
