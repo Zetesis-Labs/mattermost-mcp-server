@@ -34,6 +34,18 @@ index 56edfca..6f7663e 100644
  
  	return mattermostServer, nil
  }
+diff --git a/mcpserver/tools/files.go b/mcpserver/tools/files.go
+index f9eabd5..bac5400 100644
+--- a/mcpserver/tools/files.go
++++ b/mcpserver/tools/files.go
+@@ -37,7 +37,6 @@ func (p *MattermostToolProvider) getFileTools() []MCPTool {
+ 		mcpReadTool(p, "read_file", readFileDescription, p.toolReadFile),
+ 		mcpReadTool(p, "get_file_info", getFileInfoDescription, p.toolGetFileInfo),
+ 		mcpReadTool(p, "get_post_files", getPostFilesDescription, p.toolGetPostFiles),
+-		mcpReadTool(p, "get_file_link", getFileLinkDescription, p.toolGetFileLink),
+ 		mcpReadTool(p, "search_files", searchFilesDescription, p.toolSearchFiles),
+ 		mcpTool(p, "upload_file", uploadFileDescription, p.toolUploadFile),
+ 	}
 diff --git a/mcpserver/tools/integrations.go b/mcpserver/tools/integrations.go
 index e5dc069..3d68af0 100644
 --- a/mcpserver/tools/integrations.go

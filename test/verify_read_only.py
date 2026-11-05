@@ -17,7 +17,7 @@ PASSWORD = "Prueba-de-solo-lectura-1"
 READ_TOOLS = frozenset("""
 get_bot get_channel_groups get_channel_info get_channel_member get_channel_member_counts get_channel_members
 get_channel_members_by_ids get_channel_members_by_status get_channel_moderations get_channel_stats get_channel_unread
-get_dm_common_teams get_file_info get_file_link get_group_info get_me get_mentions get_new_users_in_team get_post_files
+get_dm_common_teams get_file_info get_group_info get_me get_mentions get_new_users_in_team get_post_files
 get_post_info get_post_reactions get_posts_around_unread get_role get_team_groups get_team_info get_team_member
 get_team_members get_team_stats get_threads get_unread_counts get_user get_user_by_email get_user_by_username
 get_user_channel_memberships get_user_channels get_user_cpa_values get_user_custom_status get_user_groups get_user_stats
@@ -33,7 +33,7 @@ BLOCKED_TOOLS = frozenset("""
 acknowledge_post add_channel_member add_channel_members add_reaction add_team_member add_team_members archive_channel
 convert_channel_privacy create_channel create_channel_bookmark create_draft create_post create_post_as_user
 create_scheduled_post create_team create_user delete_channel_bookmark delete_draft delete_post delete_scheduled_post dm
-group_message invite_users_to_team invite_users_to_team_and_channels list_incoming_webhooks mark_channel_read
+get_file_link group_message invite_users_to_team invite_users_to_team_and_channels list_incoming_webhooks mark_channel_read
 mark_channels_viewed mark_post_unread pin_post remove_channel_member remove_reaction remove_team_member restore_channel
 save_post set_channel_favorite set_channel_mute set_dnd set_post_reminder set_status set_thread_follow unpin_post
 update_channel update_channel_bookmark update_channel_member_roles update_channel_notify_props update_post
@@ -357,6 +357,8 @@ def verify():
         for label, secret in secrets.items():
             if secret in text:
                 failures.append(f"{name} devuelve una credencial: {label}")
+        if "/public?h=" in text:
+            failures.append(f"{name} devuelve un enlace público")
     if "list_incoming_webhooks" in tools:
         _, text = result_text(client.call("list_incoming_webhooks", {}))
         if seeded["incoming_id"] in text:

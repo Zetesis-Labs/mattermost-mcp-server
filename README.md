@@ -17,13 +17,16 @@ El parche hace dos cosas:
   aparecen en `tools/list` y `tools/call` las rechaza, en HTTP y en stdio, también
   con `--dev`. El mensaje de rechazo habla de «Enterprise» porque upstream usa ese
   filtro para sus licencias; aquí no tiene que ver con la licencia.
-- Quita `list_incoming_webhooks`. El ID de un webhook de entrada es su secreto:
-  con él se publica en `/hooks/<id>` sin autenticarse.
+- Quita dos herramientas que sacarían un acceso sin autenticar:
+  - `list_incoming_webhooks`: el ID de un webhook de entrada es su secreto, y con él
+    se publica en `/hooks/<id>`.
+  - `get_file_link`: devuelve un enlace público que cualquiera puede abrir, si el
+    servidor los tiene activados.
 
 Esto limita lo que hace el MCP, no el token. Quien tenga el token personal puede
 seguir escribiendo directamente contra la API de Mattermost.
 
-Contra Mattermost Team 10.11.2 fallan 12 de las 73 herramientas, con un error
+Contra Mattermost Team 10.11.2 fallan 12 de las 72 herramientas, con un error
 claro: 10 requieren licencia, y `list_agents` y `read_file` requieren el plugin
 Agents en marcha.
 
@@ -56,7 +59,7 @@ Compila la imagen, levanta Mattermost Team 10.11.2 con MySQL y comprueba:
 - que la lista de herramientas es exactamente `READ_TOOLS`;
 - que el filtro rechaza cada herramienta de `BLOCKED_TOOLS` y que `create_post` no
   publica;
-- que ninguna herramienta devuelve credenciales;
+- que ninguna herramienta devuelve credenciales ni enlaces públicos;
 - que a Mattermost solo le llegan peticiones `GET` y los `POST` de búsqueda de
   `READ_ONLY_POSTS`, según sus propios registros (estos no incluyen las rutas
   `/plugins/*`).
