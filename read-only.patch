@@ -1,0 +1,48 @@
+diff --git a/mcpserver/http_server.go b/mcpserver/http_server.go
+index b989bde..90a6d40 100644
+--- a/mcpserver/http_server.go
++++ b/mcpserver/http_server.go
+@@ -91,10 +91,9 @@ func NewHTTPServer(config HTTPConfig, logger loggerlib.Logger) (*MattermostHTTPM
+ 	// Create HTTP search and file content services for callback to plugin API
+ 	searchService, fileContentService := newPluginCallbackServices(config.GetMMServerURL())
+ 
+-	// Register tools with remote access mode. Standalone HTTP servers run
+-	// outside the plugin and have no license information, so state-changing
+-	// tools stay available.
+-	mattermostServer.registerTools(tools.AccessModeRemote, searchService, fileContentService, func() bool { return true })
++	// Register tools with remote access mode. This image is read-only: a nil predicate
++	// keeps state-changing tools unavailable.
++	mattermostServer.registerTools(tools.AccessModeRemote, searchService, fileContentService, nil)
+ 
+ 	// Create HTTP server with OAuth endpoints and MCP routing
+ 	addr := fmt.Sprintf("%s:%d", config.HTTPBindAddr, config.HTTPPort)
+diff --git a/mcpserver/stdio_server.go b/mcpserver/stdio_server.go
+index 56edfca..6f7663e 100644
+--- a/mcpserver/stdio_server.go
++++ b/mcpserver/stdio_server.go
+@@ -69,10 +69,9 @@ func NewStdioServer(config StdioConfig, logger loggerlib.Logger, searchService t
+ 		fileContentService = defaultFileContentService
+ 	}
+ 
+-	// Register tools with local access mode. Standalone stdio servers run
+-	// outside the plugin and have no license information, so state-changing
+-	// tools stay available.
+-	mattermostServer.registerTools(tools.AccessModeLocal, searchService, fileContentService, func() bool { return true })
++	// Register tools with local access mode. This image is read-only: a nil predicate
++	// keeps state-changing tools unavailable.
++	mattermostServer.registerTools(tools.AccessModeLocal, searchService, fileContentService, nil)
+ 
+ 	return mattermostServer, nil
+ }
+diff --git a/mcpserver/tools/integrations.go b/mcpserver/tools/integrations.go
+index e5dc069..3d68af0 100644
+--- a/mcpserver/tools/integrations.go
++++ b/mcpserver/tools/integrations.go
+@@ -48,7 +48,6 @@ func (p *MattermostToolProvider) getIntegrationTools() []MCPTool {
+ 	return []MCPTool{
+ 		mcpReadTool(p, "get_bot", getBotDescription, p.toolGetBot),
+ 		mcpReadTool(p, "list_bots", listBotsDescription, p.toolListBots),
+-		mcpReadTool(p, "list_incoming_webhooks", listIncomingWebhooksDescription, p.toolListIncomingWebhooks),
+ 		mcpReadTool(p, "list_outgoing_webhooks", listOutgoingWebhooksDescription, p.toolListOutgoingWebhooks),
+ 	}
+ }
