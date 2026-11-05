@@ -1,0 +1,51 @@
+name: mattermost-mcp-test
+
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mattermost
+      MYSQL_USER: mmuser
+      MYSQL_PASSWORD: mmuser
+    tmpfs:
+      - /var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-ummuser", "-pmmuser"]
+      interval: 3s
+      timeout: 3s
+      retries: 40
+
+  mattermost:
+    image: mattermost/mattermost-team-edition:10.11.2@sha256:b8bd1246cb3a92557891254a4322276206ce12451d3c8581fe2ead4786fd2673
+    platform: linux/amd64
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      MM_SQLSETTINGS_DRIVERNAME: mysql
+      MM_SQLSETTINGS_DATASOURCE: mmuser:mmuser@tcp(mysql:3306)/mattermost?charset=utf8mb4,utf8
+      MM_SERVICESETTINGS_SITEURL: http://mattermost:8065
+      MM_SERVICESETTINGS_ENABLEUSERACCESSTOKENS: "true"
+      MM_SERVICESETTINGS_ENABLEINCOMINGWEBHOOKS: "true"
+      MM_SERVICESETTINGS_ENABLEOUTGOINGWEBHOOKS: "true"
+      MM_SERVICESETTINGS_ENABLEBOTACCOUNTCREATION: "true"
+      MM_FILESETTINGS_ENABLEPUBLICLINK: "true"
+      MM_LOGSETTINGS_ENABLECONSOLE: "true"
+      MM_LOGSETTINGS_CONSOLEJSON: "true"
+      MM_LOGSETTINGS_CONSOLELEVEL: DEBUG
+    ports:
+      - "127.0.0.1:18065:8065"
+
+  mcp:
+    build: ..
+    command:
+      - --transport=http
+      - --http-bind-addr=0.0.0.0
+      - --http-port=8080
+      - --site-url=http://127.0.0.1:18080
+      - --server-url=http://mattermost:8065
+    depends_on:
+      - mattermost
+    ports:
+      - "127.0.0.1:18080:8080"
